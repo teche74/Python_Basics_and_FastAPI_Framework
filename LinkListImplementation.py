@@ -23,7 +23,7 @@ class LinkList:
         
         if index == 1:
             if self.head == None:
-                push(value);
+                self.push(value);
             else:
                 new_node.next = self.head
                 self.head = new_node
