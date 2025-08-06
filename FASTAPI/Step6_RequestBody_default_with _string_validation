@@ -1,0 +1,69 @@
+from fastapi import FastAPI, Query 
+from pydantic import BaseModel, AfterValidator
+from typing import Annotated , Optional
+
+app = FastAPI()
+
+class Item(BaseModel):
+    product_name : str
+    product_desc : str
+    product_price : float
+    product_tax : int
+    best_before_months : int
+    manufacturing_date : str
+
+medicine_data = {
+    "betadine": {
+        "product_name": "Betadine",
+        "product_desc": "Antiseptic solution for external wounds.",
+        "product_price": 75.5,
+        "product_tax": 5,
+        "best_before_months": 24,
+        "manufacturing_date": "2025-07-10"
+    },
+    "paracure": {
+        "product_name": "Paracure",
+        "product_desc": "Paracetamol-based pain and fever relief.",
+        "product_price": 48.0,
+        "product_tax": 5,
+        "best_before_months": 36,
+        "manufacturing_date": "2025-06-01"
+    },
+    "healmox": {
+        "product_name": "Healmox",
+        "product_desc": "Amoxicillin antibiotic tablet.",
+        "product_price": 112.3,
+        "product_tax": 12,
+        "best_before_months": 18,
+        "manufacturing_date": "2025-03-15"
+    },
+    "panflux": {
+        "product_name": "Panflux",
+        "product_desc": "",
+        "product_price": 89.0,
+        "product_tax": 5,
+        "best_before_months": 30,
+        "manufacturing_date": "2025-04-10"
+    },
+    "neurocet": {
+        "product_name": "Neurocet",
+        "product_desc": None,
+        "product_price": 132.0,
+        "product_tax": 18,
+        "best_before_months": 20,
+        "manufacturing_date": "2025-02-01"
+    }
+}
+
+@app.get('/medic_deatils/{medicine_name}')
+def GetDetails(medicine_name: str , medicine_desc : Annotated[str , Query(description="Override product description if needed")] = "No Valid Description!"):
+    if medicine_name not in medicine_data:
+        return {"error": "Medicine not found!"}
+
+    result = medicine_data[medicine_name].copy()
+
+    if not result.get('product_desc'):
+        result['product_desc'] = medicine_desc
+
+    return {"data": result}
+    
